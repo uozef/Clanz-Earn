@@ -1,0 +1,79 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /v1
+
+spring:
+  task:
+    scheduling:
+      pool:
+        size: 10
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database-platform: org.hibernate.dialect.MySQL5Dialect
+
+
+cloud:
+  aws:
+    credentials:
+      accessKey:
+      secretKey:
+      instanceProfile: true
+      useDefaultAwsCredentialsChain: true
+
+aws:
+  region: ${AWS_REGION}
+  sm:
+    dbArn: ${AWS_SM_DB_ARN}
+    accessKeyId: ${AWS_SM_ACCESS_KEY_ID}
+    masterPasswordArn: ${AWS_SM_MasterPassword_ARN}
+    secretAccessKey: ${AWS_SM_SECRET_ACCESS_KEY}
+    binanceArn: ${AWS_SM_Binance_ARN}
+    sendGridArn: ${AWS_SM_SendGrid_ARN}
+    twillioArn: ${AWS_SM_Twillio_ARN}
+  kms:
+    accessKeyId: ${AWS_KMS_ACCESS_KEY_ID}
+    secretAccessKey: ${AWS_KMS_SECRET_ACCESS_KEY}
+  cw:
+    accessKeyId: ${AWS_CW_ACCESS_KEY_ID}
+    secretAccessKey: ${AWS_CW_SECRET_ACCESS_KEY}
+
+cognito:
+  poolId: ${COGNITO_POOL_ID}
+  clientId: ${COGNITO_CLIENT_ID}
+  accessKey: ${COGNITO_ACCESS_KEY}
+  secretKey: ${COGNITO_SECRET_KEY}
+
+stripe:
+  sk: ${STRIPE_SK}
+
+sendgrid:
+  token: ${SENDGRID_TOKEN}
+
+twilio:
+  accountSid: ${TWILLIO_ACCOUNT_SID}
+  authTokenOrg: ${TWILLIO_AUTH_TOKEN_ORG}
+
+hubspot:
+  apiKey: ${HUBSPOT_APIKEY}
+  baseUrl: ${HUBSPOT_BASE_URL}
+
+log:
+  dbName: ${LOG_DB_NAME}
+  dbUser: ${LOG_DB_USER}
+  dbPassword: ${LOG_DB_PASSWORD}
+  dbHost: ${LOG_DB_HOST}
+  dbPort: ${LOG_DB_PORT}
+  accessToken: ${LOG_ACCESS_TOKEN}
+
+user:
+  watchlist:
+    max-size: 10
