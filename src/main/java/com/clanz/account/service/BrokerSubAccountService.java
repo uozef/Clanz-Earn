@@ -40,13 +40,10 @@ public class BrokerSubAccountService {
     }
 
     public BrokerSubAccount getSubAccountByUserId(int userId) {
-        String apikey = "90251aX8ftjh14Ya126tpqLYBMDkt9ot1o25AkUHwRuKPp1ScXaF2l6q2QTvqw4q";
-        String secretkey = "0J6kKFH8cFQPAWpzg1AwgiOGC7aJMJNPsnYOlRMYAH8kfe4vfr7xBXjsiQBvcrIs";
-        final var subAccount = BrokerSubAccount.builder().apiKey(apikey).secretKey(secretkey).build();
-       /* final var subAccount = getSubAccount(userId);
+        final var subAccount = getSubAccount(userId);
         if (subAccount == null) {
             throw new ClanzException(HttpStatus.BAD_REQUEST, "The sub account is empty", "The sub account is empty method getSubAccountByUserId");
-        }*/
+        }
         return subAccount;
     }
 
