@@ -1,0 +1,63 @@
+name: IAC, Clanz Earn ECS
+
+on:
+  push:
+    branches:
+      - "dev"
+    
+env:
+    IMAGE_REPO_NAME: 581041228798.dkr.ecr.ap-southeast-2.amazonaws.com/clanz-earn
+    IMAGE_TAG: latest
+    ECR_URI: 581041228798.dkr.ecr.ap-southeast-2.amazonaws.com
+    IMAGE_NAME: clanz-earn
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+        
+    steps: 
+    - uses: actions/checkout@v2
+      name: Build the Docker image
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_IAC_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_IAC_SECRET_ACCESS_KEY }}
+        aws-region: ap-southeast-2
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1   
+      
+    - name: Generate image tag
+      id: tags
+      run: |
+        echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+        
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      run: |
+        docker build . --file Dockerfile --tag $IMAGE_NAME:${{ steps.tags.outputs.sha_short }}
+        docker tag $IMAGE_NAME:${{ steps.tags.outputs.sha_short }} $IMAGE_REPO_NAME:${{ steps.tags.outputs.sha_short }}
+        echo pushing the Docker image
+        docker push $IMAGE_REPO_NAME:${{ steps.tags.outputs.sha_short }}
+        echo "::set-output name=image::$IMAGE_REPO_NAME:${{ steps.tags.outputs.sha_short }}"
+        
+    - name: ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ./.github/IaCClanzEarnTaskDefinitions.json
+        container-name: clanz-earn
+        image: ${{ steps.build-image.outputs.image }}
+        
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ClanzEarnService
+        cluster: ClanzEarnECSCluster
+        wait-for-service-stability: true
