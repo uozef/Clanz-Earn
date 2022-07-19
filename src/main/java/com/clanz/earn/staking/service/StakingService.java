@@ -19,7 +19,7 @@ public class StakingService {
     WebClient webClient;
     final BrokerSubAccountService brokerSubAccountService;
     private static final String BINANCE_BASE_URL = "https://nd7f983ipe.execute-api.ap-southeast-2.amazonaws.com/";
-    private static final String PRODUCT_PATH = "product=STAKING&recvWindow=60000&size=50&timestamp=";
+    private static final String PRODUCT_PATH = "product=STAKING&recvWindow=60000&size=100&timestamp=";
     private static final String CURRENT = "&current=";
     private static final String SIGNATURE = "&signature=";
     private static final String APIKEY = "X-MBX-APIKEY";

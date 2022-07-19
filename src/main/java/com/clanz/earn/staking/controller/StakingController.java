@@ -4,6 +4,7 @@ import com.clanz.base.domain.dto.ResponseDto;
 import com.clanz.base.service.AuthUserService;
 import com.clanz.earn.staking.domain.*;
 import com.clanz.earn.staking.domain.type.TxnType;
+import com.clanz.earn.staking.service.StakingDataGenerator;
 import com.clanz.earn.staking.service.StakingService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -20,16 +21,26 @@ import java.util.List;
 public class StakingController {
     private static final Logger log = LogManager.getLogger(StakingController.class);
     private final StakingService stakingService;
+    private final StakingDataGenerator stakingDataGenerator;
     private final AuthUserService authService;
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     @GetMapping(
-            path = {"/products/{current}"},
+            path = {"/products/{page}"},
             produces = {"application/json"}
     )
-    public ResponseEntity<ResponseDto<ProductListDto>> getStakingProduct(@PathVariable("current") int current) {
+    public ResponseEntity<ResponseDto<ProductListDto>> getStakingProduct(@PathVariable("page") int page) {
         Integer userId = this.authService.getAuthUser().getId();
-        return ResponseEntity.ok(ResponseDto.createSuccessMessage(this.stakingService.getProducts(userId, current)));
+        return ResponseEntity.ok(ResponseDto.createSuccessMessage(this.stakingService.getProducts(userId, page)));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @GetMapping(
+            path = {"/products"},
+            produces = {"application/json"}
+    )
+    public ResponseEntity<ResponseDto<List<ProductListFriendlyDto>>> getStakingProducts() {
+        return ResponseEntity.ok(ResponseDto.createSuccessMessage(this.stakingDataGenerator.getProductList()));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
