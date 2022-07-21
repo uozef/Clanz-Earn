@@ -13,18 +13,16 @@ import javax.sql.DataSource;
 
 @Configuration
 @RequiredArgsConstructor
+@Profile("!test")
 public class DataSourceConfig {
     private final AWSSecretManagerService awsSecurityManagerService;
-    private SMDBResponseDto databaseCredential;
+    private final DatabaseProperties databaseProperties;
 
-    @PostConstruct
-    public void init() {
-        databaseCredential = awsSecurityManagerService.getDatabaseCredential();
-    }
 
-    @Profile("!test")
+    @Profile("!dev")
     @Bean
     public DataSource getDataSource() {
+        final var databaseCredential = awsSecurityManagerService.getDatabaseCredential();
         final var dataSourceBuilder = DataSourceBuilder.create();
         dataSourceBuilder.driverClassName("com.mysql.jdbc.Driver");
 
@@ -36,6 +34,23 @@ public class DataSourceConfig {
         dataSourceBuilder.url(jdbcUrl);
         dataSourceBuilder.username(databaseCredential.getUsername());
         dataSourceBuilder.password(databaseCredential.getPassword());
+        return dataSourceBuilder.build();
+    }
+
+    @Profile("dev")
+    @Bean
+    public DataSource getDevDataSource() {
+        final var dataSourceBuilder = DataSourceBuilder.create();
+        dataSourceBuilder.driverClassName("com.mysql.jdbc.Driver");
+
+        final var dbName = databaseProperties.getName();
+        final var hostname = databaseProperties.getHost();
+        final var port = databaseProperties.getPort();
+
+        final var jdbcUrl = "jdbc:mysql://" + hostname + ":" + port + "/" + dbName + "?useSSL=false&useUnicode=yes&characterEncoding=UTF-8";
+        dataSourceBuilder.url(jdbcUrl);
+        dataSourceBuilder.username(databaseProperties.getUsername());
+        dataSourceBuilder.password(databaseProperties.getPassword());
         return dataSourceBuilder.build();
     }
 }

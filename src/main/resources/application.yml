@@ -52,28 +52,9 @@ cognito:
   accessKey: ${COGNITO_ACCESS_KEY}
   secretKey: ${COGNITO_SECRET_KEY}
 
-stripe:
-  sk: ${STRIPE_SK}
-
-sendgrid:
-  token: ${SENDGRID_TOKEN}
-
-twilio:
-  accountSid: ${TWILLIO_ACCOUNT_SID}
-  authTokenOrg: ${TWILLIO_AUTH_TOKEN_ORG}
-
-hubspot:
-  apiKey: ${HUBSPOT_APIKEY}
-  baseUrl: ${HUBSPOT_BASE_URL}
-
-log:
-  dbName: ${LOG_DB_NAME}
-  dbUser: ${LOG_DB_USER}
-  dbPassword: ${LOG_DB_PASSWORD}
-  dbHost: ${LOG_DB_HOST}
-  dbPort: ${LOG_DB_PORT}
-  accessToken: ${LOG_ACCESS_TOKEN}
-
-user:
-  watchlist:
-    max-size: 10
+database:
+  name: ${DB_NAME}
+  host: ${DB_HOST}
+  port: ${DB_PORT}
+  username: ${DB_USERNAME}
+  password: ${DB_PASSWORD}

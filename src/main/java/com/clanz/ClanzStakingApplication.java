@@ -2,6 +2,7 @@ package com.clanz;
 
 import com.clanz.base.config.AwsProperties;
 import com.clanz.base.config.CognitoProperties;
+import com.clanz.base.config.DatabaseProperties;
 import com.clanz.earn.staking.service.StakingDataGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -16,7 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.util.Properties;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-@EnableConfigurationProperties({AwsProperties.class, CognitoProperties.class, SendGridProperties.class})
+@EnableConfigurationProperties({AwsProperties.class, CognitoProperties.class, SendGridProperties.class, DatabaseProperties.class})
 @EnableScheduling
 public class ClanzStakingApplication extends SpringBootServletInitializer {
 
