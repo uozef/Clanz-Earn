@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import javax.annotation.PostConstruct;
@@ -30,7 +32,8 @@ public class CognitoService {
         final var cognitoSecretKey = cognitoProperties.getSecretKey();
         cognitoProvider = CognitoIdentityProviderClient.builder()
                 .region(Region.of(awsProperties.getRegion()))
-                .credentialsProvider(AWSCredentialsProviderUtil.getAwsCredentialsProvider(cognitoAccessKey, cognitoSecretKey))
+               // .credentialsProvider(AWSCredentialsProviderUtil.getAwsCredentialsProvider(cognitoAccessKey, cognitoSecretKey))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(cognitoAccessKey, cognitoSecretKey)))
                 .build();
     }
 

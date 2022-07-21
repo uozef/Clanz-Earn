@@ -20,28 +20,31 @@ public class StakingDataGenerator {
 
     @Scheduled(fixedRate = 10000 * 60)
     public void generate() {
+        try {
+            List<ProductDto> products = new ArrayList<>();
+            for (int i = 1; i < 15; i++) {
+                final var list = this.stakingService.getProducts(1, i);
+                if (list == null || list.getProducts() == null || list.getProducts().isEmpty()) break;
+                products.addAll(list.getProducts());
+            }
 
-        List<ProductDto> products = new ArrayList<>();
-        for (int i = 1; i < 15; i++) {
-            final var list = this.stakingService.getProducts(1000000, i);
-            if (list == null || list.getProducts() == null || list.getProducts().isEmpty()) break;
-            products.addAll(list.getProducts());
+            Set<String> assets = new HashSet<>();
+            for (var product : products) {
+                assets.add(product.getDetail().getAsset());
+            }
+            List<ProductListFriendlyDto> productList = new ArrayList<>();
+            for (var asset : assets) {
+                final var list = products.stream().filter(s -> s.getDetail().getAsset().equalsIgnoreCase(asset)).collect(Collectors.toList());
+                productList.add(ProductListFriendlyDto.builder().asset(asset).products(list).build());
+            }
+            this.productList = productList;
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
 
-        Set<String> assets = new HashSet<>();
-        for (var product : products) {
-            assets.add(product.getDetail().getAsset());
-        }
-        List<ProductListFriendlyDto> productList = new ArrayList<>();
-        for (var asset : assets) {
-            final var list = products.stream().filter(s -> s.getDetail().getAsset().equalsIgnoreCase(asset)).collect(Collectors.toList());
-            productList.add(ProductListFriendlyDto.builder().asset(asset).products(list).build());
-        }
-        this.productList = productList;
     }
 
     public List<ProductListFriendlyDto> getProductList() {
         return productList;
     }
-
 }

@@ -5,10 +5,12 @@ import com.clanz.base.util.HmacSHA256Signer;
 import com.clanz.earn.staking.domain.*;
 import com.clanz.earn.staking.domain.type.TxnType;
 import com.google.gson.Gson;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -40,14 +42,24 @@ public class StakingService {
     }
 
     public ProductListDto getProducts(int userId, int current) {
-        final var subAccount = this.brokerSubAccountService.getSubAccountByUserId(userId);
-        final var queryParams = PRODUCT_PATH + (System.currentTimeMillis()) + CURRENT + (current == 0 ? 1 : current);
-        final var signature = HmacSHA256Signer.sign(queryParams, subAccount.getSecretKey());
-        final var payload = "/sapi/v1/staking/productList?" + queryParams + SIGNATURE + signature;
-        var res = webClient.get().uri(payload).header(APIKEY, subAccount.getApiKey())
-                .accept(MediaType.APPLICATION_JSON).retrieve().bodyToMono(String.class).block();
-        res = "{\"products\":" + res + "}";
-        return new Gson().fromJson(res, ProductListDto.class);
+            final var subAccount = this.brokerSubAccountService.getSubAccountByUserId(userId);
+            final var queryParams = PRODUCT_PATH + (System.currentTimeMillis()) + CURRENT + (current == 0 ? 1 : current);
+            final var signature = HmacSHA256Signer.sign(queryParams, subAccount.getSecretKey());
+            final var payload = "/sapi/v1/staking/productList?" + queryParams + SIGNATURE + signature;
+            var res = webClient.get().uri(payload).header(APIKEY, subAccount.getApiKey())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .onStatus(HttpStatus::isError, clientResponse ->
+                            clientResponse.bodyToMono(String.class)
+                                    .flatMap(error ->
+                                            Mono.error(new RuntimeException(error.toString()))
+                                    )
+                    )
+                    .bodyToMono(String.class)
+                    .block();
+            res = "{\"products\":" + res + "}";
+            return new Gson().fromJson(res, ProductListDto.class);
+
     }
 
     public PurchaseResponseDto purchase(int userId, PurchaseRequestDto purchaseRequestDto) {
